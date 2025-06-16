@@ -19,7 +19,13 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(sort_show src/main.cpp)
+add_executable(sort_show 
+    src/main.cpp
+    src/components/ControlPanel.cpp
+    src/controls/SelectionBox.cpp
+    src/controls/Slider.cpp
+    src/controls/Button.cpp
+)
 
 target_compile_features(sort_show PRIVATE cxx_std_17)
 
