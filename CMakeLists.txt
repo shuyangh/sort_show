@@ -22,6 +22,9 @@ FetchContent_MakeAvailable(SFML)
 add_executable(sort_show 
     src/main.cpp
     src/components/ControlPanel.cpp
+    src/components/AlgorithmsDemonstrator.cpp
+    src/algorithms/IDemonstrator.cpp
+    src/algorithms/BubbleSortDemonstrator.cpp
     src/controls/SelectionBox.cpp
     src/controls/Slider.cpp
     src/controls/Button.cpp

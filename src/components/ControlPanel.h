@@ -35,7 +35,7 @@ public:
     
     void setupControls(const sf::FloatRect& panel_shape_ref);
     void updateLayout(const sf::FloatRect& panel_shape_ref);
-    void updateStatistics(int comparisons, int array_accesses, int swaps, int passes, float sortedness);
+    void updateStatistics(int comparisons, int array_accesses, int assignments, int passes, float sortedness);
     void handleEvent(const sf::Event& event_ref, const sf::Vector2f& mouse_position_ref);
     void update(const sf::Vector2f& mouse_position_ref);
     void render(sf::RenderWindow& window_ref);
@@ -46,6 +46,7 @@ public:
     std::function<void()> on_reset_clicked;
     std::function<void()> on_pause_resume_clicked;
     std::function<void(int)> on_data_size_changed;
+    std::function<void(int)> on_algorithm_changed;
     std::function<void(int)> on_shuffle_type_changed;
     std::function<void(float)> on_speed_changed;
     

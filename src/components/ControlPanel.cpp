@@ -80,7 +80,7 @@ void ControlPanel::setupControls(const sf::FloatRect& panel_area) {
     labels.back().setPosition(sf::Vector2f(x, y));
     y += 25;
 
-    selection_boxes.emplace_back(sf::Vector2f(x, y), width, std::vector<std::wstring>{L"正序", L"逆序", L"均匀分布", L"正态分布"}, &font);
+    selection_boxes.emplace_back(sf::Vector2f(x, y), width, std::vector<std::wstring>{L"均匀分布", L"正序", L"逆序", L"正态分布"}, &font);
     y += 60;
     
     labels.emplace_back(font);
@@ -117,7 +117,7 @@ void ControlPanel::setupControls(const sf::FloatRect& panel_area) {
     labels.back().setPosition(sf::Vector2f(x, y + 10));
     y += 35;
     std::vector<std::wstring> statistic_labels = {
-        L"比较次数:", L"数组访问次数:", L"交换次数:", L"遍历轮数:", L"有序度:"
+        L"比较次数:", L"数组访问次数:", L"赋值次数:", L"遍历轮数:", L"有序度:"
     };
     
     for (size_t statistic_index = 0; statistic_index < statistic_labels.size(); ++statistic_index) {
@@ -144,8 +144,10 @@ void ControlPanel::setupControls(const sf::FloatRect& panel_area) {
             if (on_speed_changed) on_speed_changed(value / 10.0f);
         });
     }
-    
-    if (selection_boxes.size() >= 2) {
+      if (selection_boxes.size() >= 2) {
+        selection_boxes[0].setCallback([this](int index) {
+            if (on_algorithm_changed) on_algorithm_changed(index);
+        });
         selection_boxes[1].setCallback([this](int index) {
             if (on_shuffle_type_changed) on_shuffle_type_changed(index);
         });
@@ -261,11 +263,11 @@ void ControlPanel::updateLayout(const sf::FloatRect& panel_area) {
     }
 }
 
-void ControlPanel::updateStatistics(int comparisons, int array_accesses, int swaps, int passes, float sortedness) {
+void ControlPanel::updateStatistics(int comparisons, int array_accesses, int assignments, int passes, float sortedness) {
     if (statistics.size() >= 5) {
         statistics[0].setString(std::to_string(comparisons));
         statistics[1].setString(std::to_string(array_accesses));
-        statistics[2].setString(std::to_string(swaps));
+        statistics[2].setString(std::to_string(assignments));
         statistics[3].setString(std::to_string(passes));
         statistics[4].setString(std::to_string(static_cast<int>(std::round(sortedness))) + "%");
     }

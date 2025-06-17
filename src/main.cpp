@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include "components/ControlPanel.h"
+#include "components/AlgorithmsDemonstrator.h"
 
 int main()
 {
@@ -8,6 +9,7 @@ int main()
     window.setFramerateLimit(60);
 
     ControlPanel control_panel;
+    AlgorithmsDemonstrator algorithms_demonstrator;
 
     sf::RectangleShape algorithm_display_area;
     algorithm_display_area.setFillColor(sf::Color::White);
@@ -33,8 +35,8 @@ int main()
         control_panel_shape.setSize(sf::Vector2f(control_width, window_height));
         control_panel_shape.setPosition(sf::Vector2f(display_width, 0.f));
         
-        sf::FloatRect panel_rect = sf::FloatRect(sf::Vector2f(display_width, 0.f), sf::Vector2f(control_width, window_height));
-        control_panel.updateLayout(panel_rect);
+        sf::FloatRect panel_shape = sf::FloatRect(sf::Vector2f(display_width, 0.f), sf::Vector2f(control_width, window_height));
+        control_panel.updateLayout(panel_shape);
     };
 
     updateLayout();
@@ -43,11 +45,53 @@ int main()
     float window_width = static_cast<float>(window_size.x);
     float control_width = 350.0f;
     float display_width = window_width - control_width;
-    sf::FloatRect panel_rect = sf::FloatRect(sf::Vector2f(display_width, 0.f), sf::Vector2f(control_width, static_cast<float>(window_size.y)));
-    control_panel.setupControls(panel_rect);
+    sf::FloatRect panel_shape = sf::FloatRect(sf::Vector2f(display_width, 0.f), sf::Vector2f(control_width, static_cast<float>(window_size.y)));
+    control_panel.setupControls(panel_shape);
+
+    control_panel.on_start_sort_clicked = [&]() {
+        algorithms_demonstrator.start();
+    };
+    
+    control_panel.on_reset_clicked = [&]() {
+        algorithms_demonstrator.stop();
+        algorithms_demonstrator.generateData();
+    };
+    
+    control_panel.on_pause_resume_clicked = [&]() {
+        if (control_panel.isPaused()) {
+            algorithms_demonstrator.pause();
+        } else {
+            algorithms_demonstrator.resume();
+        }
+    };
+    
+    control_panel.on_data_size_changed = [&](int size) {
+        algorithms_demonstrator.setDataSize(size);
+    };
+    
+    control_panel.on_algorithm_changed = [&](int index) {
+        std::vector<std::wstring> algorithms = {L"冒泡排序", L"快速排序", L"选择排序", L"插入排序"};
+        if (index >= 0 && index < static_cast<int>(algorithms.size())) {
+            algorithms_demonstrator.setAlgorithm(algorithms[index]);
+        }
+    };
+    
+    control_panel.on_shuffle_type_changed = [&](int index) {
+        DataDistributionMode modes[] = {DataDistributionMode::ASCENDING, DataDistributionMode::DESCENDING, DataDistributionMode::RANDOM, DataDistributionMode::NORMAL};
+        if (index >= 0 && index < 4) {
+            algorithms_demonstrator.setDataDistributionMode(modes[index]);
+        }
+    };
+    
+    control_panel.on_speed_changed = [&](float speed) {
+        algorithms_demonstrator.setAnimationSpeed(speed);
+    };
+
+    sf::Clock delta_clock;
 
     while (window.isOpen()) {
-        sf::Vector2f mouse_pos = sf::Vector2f(sf::Mouse::getPosition(window));
+        sf::Vector2f mouse_position = sf::Vector2f(sf::Mouse::getPosition(window));
+        float duration_since_animation_start = delta_clock.restart().asSeconds();
         
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -62,15 +106,23 @@ int main()
                 }
             }
             
-            control_panel.handleEvent(*event, mouse_pos);
+            control_panel.handleEvent(*event, mouse_position);
         }
 
-        control_panel.update(mouse_pos);
+        control_panel.update(mouse_position);
+        
+        sf::FloatRect demonstrator_area = sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(display_width, static_cast<float>(window_size.y)));
+        algorithms_demonstrator.update(demonstrator_area, duration_since_animation_start);
+        
+        const auto& statistics_ref = algorithms_demonstrator.getStatistics();
+        control_panel.updateStatistics(statistics_ref.comparisons, statistics_ref.array_accesses, statistics_ref.assignments, statistics_ref.passes, statistics_ref.sortedness);
         
         window.clear(sf::Color::White);
         
         window.draw(algorithm_display_area);
         window.draw(control_panel_shape);
+        
+        algorithms_demonstrator.render(window);
         
         control_panel.render(window);
         
