@@ -77,7 +77,7 @@ int main()
     };
     
     control_panel.on_shuffle_type_changed = [&](int index) {
-        DataDistributionMode modes[] = {DataDistributionMode::ASCENDING, DataDistributionMode::DESCENDING, DataDistributionMode::RANDOM, DataDistributionMode::NORMAL};
+        DataDistributionMode modes[] = {DataDistributionMode::RANDOM, DataDistributionMode::ASCENDING, DataDistributionMode::DESCENDING, DataDistributionMode::NORMAL};
         if (index >= 0 && index < 4) {
             algorithms_demonstrator.setDataDistributionMode(modes[index]);
         }
@@ -85,6 +85,10 @@ int main()
     
     control_panel.on_speed_changed = [&](float speed) {
         algorithms_demonstrator.setAnimationSpeed(speed);
+    };
+    
+    control_panel.on_audio_toggled = [&](bool enabled) {
+        algorithms_demonstrator.setAudioStatus(enabled);
     };
 
     sf::Clock delta_clock;

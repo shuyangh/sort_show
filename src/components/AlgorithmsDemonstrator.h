@@ -8,6 +8,7 @@
 #include <chrono>
 #include <optional>
 #include "../algorithms/IDemonstrator.h"
+#include "MidiPlayer.h"
 
 enum DataDistributionMode {
     RANDOM,
@@ -40,6 +41,7 @@ private:
     float margin_right = 10.0f;
     
     bool is_audio_enabled = false;
+    std::unique_ptr<MidiPlayer> midi_player;
     
 public:
     AlgorithmsDemonstrator();

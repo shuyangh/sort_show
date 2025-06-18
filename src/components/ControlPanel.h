@@ -24,6 +24,7 @@ private:
     std::vector<sf::Text> labels;
     
     bool is_paused;
+    bool is_audio_enabled = false;
     
     std::vector<sf::Text> statistics_labels;
     std::vector<sf::Text> statistics;
@@ -49,8 +50,10 @@ public:
     std::function<void(int)> on_algorithm_changed;
     std::function<void(int)> on_shuffle_type_changed;
     std::function<void(float)> on_speed_changed;
+    std::function<void(bool)> on_audio_toggled;
     
     void updatePauseResumeButton();
+    void updateAudioButton();
 };
 
 #endif

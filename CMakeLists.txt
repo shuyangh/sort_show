@@ -23,6 +23,7 @@ add_executable(sort_show
     src/main.cpp
     src/components/ControlPanel.cpp
     src/components/AlgorithmsDemonstrator.cpp
+    src/components/MidiPlayer.cpp
     src/algorithms/IDemonstrator.cpp
     src/algorithms/BubbleSortDemonstrator.cpp
     src/controls/SelectionBox.cpp
@@ -37,6 +38,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 target_link_libraries(sort_show PRIVATE sfml-graphics sfml-window sfml-system)
+
+if(WIN32)
+    target_link_libraries(sort_show PRIVATE winmm)
+endif()
 
 if(WIN32)
     if(EXISTS "${SFML_SOURCE_DIR}/extlibs/bin/x64/openal32.dll")

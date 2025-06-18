@@ -18,6 +18,12 @@ AlgorithmsDemonstrator::AlgorithmsDemonstrator()
         }
     }
     
+    midi_player = std::make_unique<MidiPlayer>();
+    if (midi_player->isInitialized()) {
+        midi_player->setInstrument(1);
+        midi_player->setNoteRange(48, 48);
+    }
+    
     explaination = sf::Text(font);
     generateData();
     
@@ -205,18 +211,25 @@ sf::Vector2f AlgorithmsDemonstrator::getElementPosition(int index) const {
 }
 
 void AlgorithmsDemonstrator::playNote(int value) const {
-    if (is_audio_enabled) {
-        
+    if (is_audio_enabled && midi_player && midi_player->isInitialized()) {
+        midi_player->playNote(value, data_size, 150);
     }
 }
 
 void AlgorithmsDemonstrator::updateBars(const sf::FloatRect& area_ref) {
     if (data.empty()) return;
     
+    float adjusted_bottom_margin = margin_bottom;
+    int data_size = static_cast<int>(data.size());
+    if (data_size < 32 && data_size > 0) {
+        float margin_multiplier = 1.0f + 1.5f * (32 - data_size) / 31.0f;
+        adjusted_bottom_margin = margin_bottom * margin_multiplier;
+    }
+    
     content_area.position.x = area_ref.position.x + margin_left;
     content_area.position.y = area_ref.position.y + margin_top;
     content_area.size.x = area_ref.size.x - margin_left - margin_right;
-    content_area.size.y = area_ref.size.y - margin_top - margin_bottom;
+    content_area.size.y = area_ref.size.y - margin_top - adjusted_bottom_margin;
     
     if (content_area.size.x <= 0 || content_area.size.y <= 0) return;
     
@@ -319,9 +332,14 @@ void AlgorithmsDemonstrator::renderIndicators(sf::RenderWindow& window_ref, cons
 }
 
 void AlgorithmsDemonstrator::renderTriangleIndicator(sf::RenderWindow& window_ref, const VisualIndicator& indicator_ref) {
-    sf::CircleShape triangle(8, 3);
+    int data_size = static_cast<int>(data.size());
+    float triangle_size = 8.0f;
+    if (data_size < 32 && data_size > 0) {
+        triangle_size = 8.0f + 24.0f * (32 - data_size) / 31.0f;
+    }
+    sf::CircleShape triangle(triangle_size, 3);
     triangle.setFillColor(indicator_ref.color);
-    triangle.setPosition(sf::Vector2f(indicator_ref.position.x - 8, indicator_ref.position.y));
+    triangle.setPosition(sf::Vector2f(indicator_ref.position.x - triangle_size, indicator_ref.position.y));
     window_ref.draw(triangle);
 }
 

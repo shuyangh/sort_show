@@ -115,9 +115,10 @@ void BubbleSortDemonstrator::performBubbleSortStep(std::vector<int>& data_ref, A
     if (current_comparison_index == 0) {
         largest_element_index = 0;
     }
-    
     statistics.comparisons++;
     statistics.array_accesses += 2;
+    
+    demonstrator_ref.playNote(data_ref[current_comparison_index]);
     
     if (data_ref[current_comparison_index] > data_ref[current_comparison_index + 1]) {
         swapped_in_current_pass = true;

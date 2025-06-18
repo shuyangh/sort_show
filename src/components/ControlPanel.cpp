@@ -90,10 +90,11 @@ void ControlPanel::setupControls(const sf::FloatRect& panel_area) {
     labels.back().setStyle(sf::Text::Bold);
     labels.back().setPosition(sf::Vector2f(x, y));
     y += 25;
-
     sliders.emplace_back(sf::Vector2f(x, y), width, 1.0f, 100.0f, 5.0f, &font);
     y += 75;
     
+    buttons.emplace_back(sf::Vector2f(x, y), sf::Vector2f(width, 45), L"音频: 关闭", &font);
+    y += 55;
     buttons.emplace_back(sf::Vector2f(x, y), sf::Vector2f(width, 45), L"开始排序", &font);
     y += 55;
     buttons.emplace_back(sf::Vector2f(x, y), sf::Vector2f(width, 45), L"重置", &font);
@@ -152,16 +153,21 @@ void ControlPanel::setupControls(const sf::FloatRect& panel_area) {
             if (on_shuffle_type_changed) on_shuffle_type_changed(index);
         });
     }
-    
-    if (buttons.size() >= 3) {
+    if (buttons.size() >= 4) {
         buttons[0].setCallback([this]() {
-            if (on_start_sort_clicked) on_start_sort_clicked();
+            is_audio_enabled = !is_audio_enabled;
+            updateAudioButton();
+            if (on_audio_toggled) on_audio_toggled(is_audio_enabled);
         });
         
         buttons[1].setCallback([this]() {
+            if (on_start_sort_clicked) on_start_sort_clicked();
+        });
+        
+        buttons[2].setCallback([this]() {
             if (on_reset_clicked) on_reset_clicked();
         });
-          buttons[2].setCallback([this]() {
+          buttons[3].setCallback([this]() {
             is_paused = !is_paused;
             updatePauseResumeButton();
             if (on_pause_resume_clicked) on_pause_resume_clicked();
@@ -283,11 +289,21 @@ bool ControlPanel::isPaused() const {
 }
 
 void ControlPanel::updatePauseResumeButton() {
-    if (buttons.size() >= 3) {
+    if (buttons.size() >= 4) {
         if (is_paused) {
-            buttons[2].setLabel(L"继续");
+            buttons[3].setLabel(L"继续");
         } else {
-            buttons[2].setLabel(L"暂停");
+            buttons[3].setLabel(L"暂停");
+        }
+    }
+}
+
+void ControlPanel::updateAudioButton() {
+    if (buttons.size() >= 1) {
+        if (is_audio_enabled) {
+            buttons[0].setLabel(L"音频: 开启");
+        } else {
+            buttons[0].setLabel(L"音频: 关闭");
         }
     }
 }
