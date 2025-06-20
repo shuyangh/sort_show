@@ -26,6 +26,7 @@ add_executable(sort_show
     src/components/MidiPlayer.cpp
     src/algorithms/IDemonstrator.cpp
     src/algorithms/BubbleSortDemonstrator.cpp
+    src/algorithms/MergeSortDemonstrator.cpp
     src/controls/SelectionBox.cpp
     src/controls/Slider.cpp
     src/controls/Button.cpp

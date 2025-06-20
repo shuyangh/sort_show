@@ -1,9 +1,9 @@
 #ifndef MIDI_PLAYER_H
 #define MIDI_PLAYER_H
 
-#ifdef _WIN32
 #include <windows.h>
 #include <mmsystem.h>
+#ifdef _MSC_VER
 #pragma comment(lib, "winmm.lib")
 #endif
 

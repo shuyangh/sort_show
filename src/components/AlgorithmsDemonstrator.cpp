@@ -1,15 +1,19 @@
 #include "AlgorithmsDemonstrator.h"
 #include "../algorithms/IDemonstrator.h"
 #include "../algorithms/BubbleSortDemonstrator.h"
+#include "../algorithms/MergeSortDemonstrator.h"
 #include <algorithm>
 #include <iostream>
 #include <set>
 #include <cmath>
 
-AlgorithmsDemonstrator::AlgorithmsDemonstrator() 
-    : data_size(50), distribution_mode(DataDistributionMode::RANDOM), animation_speed(0.5f) {
+AlgorithmsDemonstrator::AlgorithmsDemonstrator() : data_size(50), distribution_mode(DataDistributionMode::RANDOM), animation_speed(0.5f) {
     AlgorithmRegistry::registerAlgorithm(L"冒泡排序", []() {
         return std::make_unique<BubbleSortDemonstrator>();
+    });
+
+    AlgorithmRegistry::registerAlgorithm(L"归并排序", []() {
+        return std::make_unique<MergeSortDemonstrator>();
     });
 
     if (!font.openFromFile("C:/Windows/Fonts/msyh.ttc")) {
@@ -18,10 +22,10 @@ AlgorithmsDemonstrator::AlgorithmsDemonstrator()
         }
     }
     
-    midi_player = std::make_unique<MidiPlayer>();
-    if (midi_player->isInitialized()) {
-        midi_player->setInstrument(1);
-        midi_player->setNoteRange(48, 48);
+    midi_player_ptr = std::make_unique<MidiPlayer>();
+    if (midi_player_ptr->isInitialized()) {
+        midi_player_ptr->setInstrument(47);
+        midi_player_ptr->setNoteRange(48, 48);
     }
     
     explaination = sf::Text(font);
@@ -211,8 +215,8 @@ sf::Vector2f AlgorithmsDemonstrator::getElementPosition(int index) const {
 }
 
 void AlgorithmsDemonstrator::playNote(int value) const {
-    if (is_audio_enabled && midi_player && midi_player->isInitialized()) {
-        midi_player->playNote(value, data_size, 150);
+    if (is_audio_enabled && midi_player_ptr && midi_player_ptr->isInitialized()) {
+        midi_player_ptr->playNote(value, data_size, 150);
     }
 }
 

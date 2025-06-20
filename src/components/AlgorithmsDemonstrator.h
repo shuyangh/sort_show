@@ -41,7 +41,7 @@ private:
     float margin_right = 10.0f;
     
     bool is_audio_enabled = false;
-    std::unique_ptr<MidiPlayer> midi_player;
+    std::unique_ptr<MidiPlayer> midi_player_ptr;
     
 public:
     AlgorithmsDemonstrator();
@@ -69,6 +69,7 @@ public:
     bool isRunning() const { return is_running && !is_paused; }
     bool isPaused() const { return is_paused; }
     const SortStatistics& getStatistics() const;
+    float getAnimationSpeed() const { return animation_speed; }
     
     std::wstring getCurrentStepExplaination() const;
     sf::Vector2f getElementPosition(int index) const;

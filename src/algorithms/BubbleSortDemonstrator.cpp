@@ -39,10 +39,10 @@ bool BubbleSortDemonstrator::step(std::vector<int>& data_ref, AlgorithmsDemonstr
     }
 
     if (animation_state.is_animating) {
-        updateSwapAnimation(data_ref, scaled_duration_since_animation_start);
+        updateSwapAnimation(data_ref, demonstrator_ref, scaled_duration_since_animation_start);
         return false;
     }
-      if (animation_clock.getElapsedTime().asSeconds() >= time_per_step) {
+    if (animation_clock.getElapsedTime().asSeconds() >= time_per_step) {
         performBubbleSortStep(data_ref, demonstrator_ref);
         animation_clock.restart();
     } else if (current_step_description == L"准备开始排序") {
@@ -104,9 +104,8 @@ void BubbleSortDemonstrator::performBubbleSortStep(std::vector<int>& data_ref, A
     
     animation_state.left_comparison_index = -1;
     animation_state.right_comparison_index = -1;
-    
-    if (current_comparison_index >= static_cast<int>(data_ref.size()) - bubble_pass - 1) {
-        endCurrentPass(data_ref);
+      if (current_comparison_index >= static_cast<int>(data_ref.size()) - bubble_pass - 1) {
+        endCurrentPass(data_ref, demonstrator_ref);
         return;
     }
     
@@ -119,6 +118,7 @@ void BubbleSortDemonstrator::performBubbleSortStep(std::vector<int>& data_ref, A
     statistics.array_accesses += 2;
     
     demonstrator_ref.playNote(data_ref[current_comparison_index]);
+    demonstrator_ref.playNote(data_ref[current_comparison_index + 1]);
     
     if (data_ref[current_comparison_index] > data_ref[current_comparison_index + 1]) {
         swapped_in_current_pass = true;
@@ -135,17 +135,16 @@ void BubbleSortDemonstrator::performBubbleSortStep(std::vector<int>& data_ref, A
     } else {
         largest_element_index = current_comparison_index + 1;
         current_comparison_index++;
-        
         current_step_description = L"第 " + std::to_wstring(bubble_pass + 1) + L" 轮：元素 " + std::to_wstring(data_ref[animation_state.left_comparison_index]) + L" ≤ " + std::to_wstring(data_ref[animation_state.right_comparison_index]) + L"，位置正确，继续下一对";
         
         updateIndicators(demonstrator_ref, data_ref);
         
-        startPause();
+        startPause(demonstrator_ref);
         return;
     }
 }
 
-void BubbleSortDemonstrator::endCurrentPass(std::vector<int>& data_ref) {
+void BubbleSortDemonstrator::endCurrentPass(std::vector<int>& data_ref, AlgorithmsDemonstrator& demonstrator_ref) {
     statistics.passes++;
     
     current_comparison_index = 0;
@@ -165,11 +164,10 @@ void BubbleSortDemonstrator::endCurrentPass(std::vector<int>& data_ref) {
         animation_state.completed = true;
         animation_state.left_comparison_index = -1;
         animation_state.right_comparison_index = -1;
-        return;
-    } else {
+        return;    } else {
         current_step_description = L"第 " + std::to_wstring(bubble_pass) + L" 轮完成，最大元素已就位。开始第 " + std::to_wstring(bubble_pass + 1) + L" 轮";
         swapped_in_current_pass = false;
-        startPause();
+        startPause(demonstrator_ref);
     }
 }
 
@@ -210,10 +208,14 @@ void BubbleSortDemonstrator::startSwapAnimation(int left_element_index, int righ
     animation_state.target_positions = {left_element_target_position, right_element_target_position};
 }
 
-void BubbleSortDemonstrator::updateSwapAnimation(std::vector<int>& data_ref, float scaled_duration_since_animation_start) {
+void BubbleSortDemonstrator::updateSwapAnimation(std::vector<int>& data_ref, AlgorithmsDemonstrator& demonstrator_ref, float scaled_duration_since_animation_start) {
     animation_state.animation_progress += scaled_duration_since_animation_start / swap_animation_duration;
         
     if (animation_state.animation_progress >= 1.0f) {
+        if (animation_state.left_element_index >= 0 && animation_state.right_element_index >= 0) {
+            demonstrator_ref.playNote(data_ref[animation_state.left_element_index]);
+            demonstrator_ref.playNote(data_ref[animation_state.right_element_index]);
+        }
         current_step_description = L"交换完成：元素 " + std::to_wstring(data_ref[animation_state.left_element_index]) + L" 和 " + std::to_wstring(data_ref[animation_state.right_element_index]) + L" 已交换位置";
         
         std::swap(data_ref[animation_state.left_element_index], data_ref[animation_state.right_element_index]);
@@ -228,16 +230,17 @@ void BubbleSortDemonstrator::updateSwapAnimation(std::vector<int>& data_ref, flo
         animation_state.animating_elements.clear();
         animation_state.start_positions.clear();
         animation_state.target_positions.clear();
+          current_comparison_index++;
         
-        current_comparison_index++;
-        
-        startPause();
+        startPause(demonstrator_ref);
     }
 }
 
-void BubbleSortDemonstrator::startPause() {
+void BubbleSortDemonstrator::startPause(AlgorithmsDemonstrator& demonstrator_ref) {
     animation_state.is_pausing = true;
     animation_state.pause_timer = 0.0f;
+    float base_pause_duration = 0.5f;
+    animation_state.pause_duration = base_pause_duration / demonstrator_ref.getAnimationSpeed();
 }
 
 void BubbleSortDemonstrator::updatePause(float scaled_duration_since_animation_start) {

@@ -53,22 +53,18 @@ void MidiPlayer::playNote(int value, int max_value, int duration_milliseconds) {
 void MidiPlayer::stopAllNotes() {
     if (!is_initialized) return;
     
-#ifdef _WIN32
     for (int channel = 0; channel < 16; ++channel) {
         sendMidiMessage(0xB0 | channel, 123, 0);
         sendMidiMessage(0xB0 | channel, 120, 0);
     }
-#endif
 }
 
 void MidiPlayer::setInstrument(int instrument) {
     if (!is_initialized) return;
     
-#ifdef _WIN32
     current_instrument = std::max(1, std::min(128, instrument));
     
     sendMidiMessage(0xC0 | current_channel, current_instrument - 1, 0);
-#endif
 }
 
 void MidiPlayer::setChannel(int channel) {
@@ -80,13 +76,11 @@ void MidiPlayer::setNoteRange(int base_note_param, int range) {
     note_range = std::max(1, std::min(127 - base_note, range));
 }
 
-void MidiPlayer::sendMidiMessage(unsigned char status, unsigned char data1, unsigned char data2) {
-#ifdef _WIN32
+void MidiPlayer::sendMidiMessage(unsigned char status, unsigned char note, unsigned char velocity) {
     if (!is_initialized || !midi_out_handle) return;
     
-    DWORD message = status | (data1 << 8) | (data2 << 16);
+    DWORD message = status | (note << 8) | (velocity << 16);
     midiOutShortMsg(midi_out_handle, message);
-#endif
 }
 
 int MidiPlayer::mapValueToNote(int value, int max_value) const {

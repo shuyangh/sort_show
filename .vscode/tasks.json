@@ -6,11 +6,13 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "-B", "build",
+                "-B",
+                "build",
                 "-DCMAKE_BUILD_TYPE=Debug",
                 "-DCMAKE_C_COMPILER=gcc",
                 "-DCMAKE_CXX_COMPILER=g++",
-                "-G", "MinGW Makefiles"
+                "-G",
+                "MinGW Makefiles"
             ],
             "group": "build",
             "detail": "Configure CMake project for debug build with g++",
@@ -24,11 +26,13 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "-B", "build",
+                "-B",
+                "build",
                 "-DCMAKE_BUILD_TYPE=Release",
                 "-DCMAKE_C_COMPILER=gcc",
                 "-DCMAKE_CXX_COMPILER=g++",
-                "-G", "MinGW Makefiles"
+                "-G",
+                "MinGW Makefiles"
             ],
             "group": "build",
             "detail": "Configure CMake project for release build with g++",
@@ -42,13 +46,12 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "build",
-                "--config", "Debug"
+                "--build",
+                "build",
+                "--config",
+                "Debug"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "detail": "Build the project in debug mode",
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -63,8 +66,10 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "build",
-                "--config", "Release"
+                "--build",
+                "build",
+                "--config",
+                "Release"
             ],
             "group": "build",
             "detail": "Build the project in release mode",
@@ -105,8 +110,10 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "build",
-                "--target", "clean"
+                "--build",
+                "build",
+                "--target",
+                "clean"
             ],
             "group": "build",
             "detail": "Clean build artifacts",

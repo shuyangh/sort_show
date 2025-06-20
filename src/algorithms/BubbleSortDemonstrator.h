@@ -44,13 +44,12 @@ public:
     
 private:
     void performBubbleSortStep(std::vector<int>& data_ref, AlgorithmsDemonstrator& demonstrator_ref);
-    void endCurrentPass(std::vector<int>& data_ref);
+    void endCurrentPass(std::vector<int>& data_ref, AlgorithmsDemonstrator& demonstrator_ref);
     void updateStatistics(const std::vector<int>& data_ref);
     void updateIndicators(AlgorithmsDemonstrator& demonstrator_ref, const std::vector<int>& data_ref);
-    
     void startSwapAnimation(int left_element_index, int right_element_index, AlgorithmsDemonstrator& demonstrator_ref);
-    void updateSwapAnimation(std::vector<int>& data_ref, float scaled_duration_since_animation_start);
-    void startPause();
+    void updateSwapAnimation(std::vector<int>& data_ref, AlgorithmsDemonstrator& demonstrator_ref, float scaled_duration_since_animation_start);
+    void startPause(AlgorithmsDemonstrator& demonstrator_ref);
     void updatePause(float scaled_duration_since_animation_start);
 };
 
