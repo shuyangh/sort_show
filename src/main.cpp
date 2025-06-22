@@ -70,7 +70,7 @@ int main()
     };
     
     control_panel.on_algorithm_changed = [&](int index) {
-        std::vector<std::wstring> algorithms = {L"冒泡排序", L"归并排序"};
+        std::vector<std::wstring> algorithms = {L"冒泡排序", L"快速排序", L"归并排序"};
         if (index >= 0 && index < static_cast<int>(algorithms.size())) {
             algorithms_demonstrator.setAlgorithm(algorithms[index]);
         }

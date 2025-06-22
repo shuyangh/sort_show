@@ -36,7 +36,7 @@ struct MergeStep {
     bool is_in_copy_back_phase = false;
     int copy_back_index = -1;
     std::vector<std::pair<int, int>> pending_swaps;
-    MergeStep(int left_index, int middle, int right, bool is_dividing_step = true) : left_index(left_index), middle_index(middle), right_index(right), is_dividing(is_dividing_step), is_merging(false), merge_left_index(left_index), merge_right_index(middle + 1), merge_target_index(0) {}
+    MergeStep(int left, int middle, int right, bool is_dividing_step = true) : left_index(left), middle_index(middle), right_index(right), is_dividing(is_dividing_step), is_merging(false), merge_left_index(left), merge_right_index(middle + 1), merge_target_index(0) {}
 };
 
 class MergeSortDemonstrator : public IDemonstrator {
@@ -100,7 +100,8 @@ private:
     void addCompletedMergeIndicator(float bar_width, const sf::FloatRect& content_area, float rectangle_height, const std::vector<int>& data_ref);
     void addActiveMergeIndicators(float bar_width, const sf::FloatRect& content_area, float rectangle_height);
     void addComparisonArrows(float bar_width, const sf::FloatRect& content_area);
-    void addTempArrayProgress(float bar_width, const sf::FloatRect& content_area);    void addTriangleIndicator(float bar_width, const sf::FloatRect& content_area);
+    void addTempArrayProgress(float bar_width, const sf::FloatRect& content_area);
+    void addTriangleIndicator(float bar_width, const sf::FloatRect& content_area);
     void addSpecialPairSwapIndicator(float bar_width, const sf::FloatRect& content_area);
     void resetPairSwapState();
     void startSwapAnimation(int source_index, int target_index, AlgorithmsDemonstrator& demonstrator_ref);

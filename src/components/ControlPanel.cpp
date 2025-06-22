@@ -59,7 +59,7 @@ void ControlPanel::setupControls(const sf::FloatRect& panel_area) {
     labels.back().setPosition(sf::Vector2f(x, y));
     y += 25;
 
-    selection_boxes.emplace_back(sf::Vector2f(x, y), width, std::vector<std::wstring>{L"冒泡排序", L"归并排序"}, &font);
+    selection_boxes.emplace_back(sf::Vector2f(x, y), width, std::vector<std::wstring>{L"冒泡排序", L"快速排序", L"归并排序"}, &font);
     y += 60;
     
     labels.emplace_back(font);

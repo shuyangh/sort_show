@@ -27,6 +27,7 @@ add_executable(sort_show
     src/algorithms/IDemonstrator.cpp
     src/algorithms/BubbleSortDemonstrator.cpp
     src/algorithms/MergeSortDemonstrator.cpp
+    src/algorithms/QuickSortDemonstrator.cpp
     src/controls/SelectionBox.cpp
     src/controls/Slider.cpp
     src/controls/Button.cpp

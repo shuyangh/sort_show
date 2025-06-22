@@ -320,8 +320,7 @@ bool MergeSortDemonstrator::performCopyBackWithSwaps(std::vector<int>& data_ref,
     
     if (data_ref[target_position] == target_value) {
         demonstrator_ref.playNote(target_value);
-        current_step_description = L"元素 " + std::to_wstring(target_value) + 
-                                  L" 已在正确位置（位置 " + std::to_wstring(target_position) + L"）";
+        current_step_description = L"元素 " + std::to_wstring(target_value) + L" 已在正确位置（位置 " + std::to_wstring(target_position) + L"）";
         current_step.copy_back_index++;
         updateIndicators(demonstrator_ref, data_ref);
         return false;
@@ -356,8 +355,7 @@ void MergeSortDemonstrator::updateStatistics(const std::vector<int>& data_ref) {
     }
     
     int maximum_inversions_count = static_cast<int>(data_ref.size() * (data_ref.size() - 1) / 2);
-    statistics.sortedness = maximum_inversions_count > 0 ? 
-        (1.0f - static_cast<float>(inversions) / maximum_inversions_count) : 1.0f;
+    statistics.sortedness = maximum_inversions_count > 0 ? (1.0f - static_cast<float>(inversions) / maximum_inversions_count) * 100.0f : 100.0f;
 }
 
 void MergeSortDemonstrator::updateIndicators(AlgorithmsDemonstrator& demonstrator_ref, const std::vector<int>& data_ref) {

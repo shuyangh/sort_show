@@ -2,6 +2,7 @@
 #include "../algorithms/IDemonstrator.h"
 #include "../algorithms/BubbleSortDemonstrator.h"
 #include "../algorithms/MergeSortDemonstrator.h"
+#include "../algorithms/QuickSortDemonstrator.h"
 #include <algorithm>
 #include <iostream>
 #include <set>
@@ -10,6 +11,10 @@
 AlgorithmsDemonstrator::AlgorithmsDemonstrator() : data_size(50), distribution_mode(DataDistributionMode::RANDOM), animation_speed(0.5f) {
     AlgorithmRegistry::registerAlgorithm(L"冒泡排序", []() {
         return std::make_unique<BubbleSortDemonstrator>();
+    });
+
+    AlgorithmRegistry::registerAlgorithm(L"快速排序", []() {
+        return std::make_unique<QuickSortDemonstrator>();
     });
 
     AlgorithmRegistry::registerAlgorithm(L"归并排序", []() {
@@ -372,19 +377,34 @@ void AlgorithmsDemonstrator::renderArrowIndicator(sf::RenderWindow& window_ref, 
 void AlgorithmsDemonstrator::renderRangeIndicator(sf::RenderWindow& window_ref, const VisualIndicator& indicator_ref) {
     float width = indicator_ref.size.x;
     
-    sf::RectangleShape line(sf::Vector2f(width, 3));
+    // Scale with data size like triangle indicator
+    int data_size = static_cast<int>(data.size());
+    float line_thickness = 3.0f;
+    float boundary_height = 15.0f;
+    float boundary_width = 3.0f;
+    
+    if (data_size < 32 && data_size > 0) {
+        float scale_factor = 1.0f + 1.0f * (32 - data_size) / 31.0f;
+        line_thickness *= scale_factor;
+        boundary_height *= scale_factor;
+        boundary_width *= scale_factor;
+    }
+    
+    sf::Vector2f adjusted_line_position(indicator_ref.position.x, indicator_ref.position.y - (line_thickness - 3.0f) / 2.0f);
+    
+    sf::RectangleShape line(sf::Vector2f(width, line_thickness));
     line.setFillColor(indicator_ref.color);
-    line.setPosition(indicator_ref.position);
+    line.setPosition(adjusted_line_position);
     window_ref.draw(line);
     
-    sf::RectangleShape left_boundary(sf::Vector2f(3, 15));
+    sf::RectangleShape left_boundary(sf::Vector2f(boundary_width, boundary_height));
     left_boundary.setFillColor(indicator_ref.color);
-    left_boundary.setPosition(sf::Vector2f(indicator_ref.position.x, indicator_ref.position.y - 6));
+    left_boundary.setPosition(sf::Vector2f(indicator_ref.position.x, indicator_ref.position.y - boundary_height/2.0f));
     window_ref.draw(left_boundary);
     
-    sf::RectangleShape right_boundary(sf::Vector2f(3, 15));
+    sf::RectangleShape right_boundary(sf::Vector2f(boundary_width, boundary_height));
     right_boundary.setFillColor(indicator_ref.color);
-    right_boundary.setPosition(sf::Vector2f(indicator_ref.position.x + width - 3, indicator_ref.position.y - 6));
+    right_boundary.setPosition(sf::Vector2f(indicator_ref.position.x + width - boundary_width, indicator_ref.position.y - boundary_height/2.0f));
     window_ref.draw(right_boundary);
 }
 
