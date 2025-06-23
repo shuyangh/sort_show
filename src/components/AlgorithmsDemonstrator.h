@@ -40,7 +40,7 @@ private:
     float margin_left = 10.0f;
     float margin_right = 10.0f;
     
-    bool is_audio_enabled = false;
+    bool is_audio_enabled = true;
     std::unique_ptr<MidiPlayer> midi_player_ptr;
     
 public:

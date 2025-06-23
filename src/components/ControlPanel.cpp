@@ -93,7 +93,7 @@ void ControlPanel::setupControls(const sf::FloatRect& panel_area) {
     sliders.emplace_back(sf::Vector2f(x, y), width, 1.0f, 100.0f, 5.0f, &font);
     y += 75;
     
-    buttons.emplace_back(sf::Vector2f(x, y), sf::Vector2f(width, 45), L"音频: 关闭", &font);
+    buttons.emplace_back(sf::Vector2f(x, y), sf::Vector2f(width, 45), L"音频: 开启", &font);
     y += 55;
     buttons.emplace_back(sf::Vector2f(x, y), sf::Vector2f(width, 45), L"开始排序", &font);
     y += 55;

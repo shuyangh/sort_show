@@ -24,7 +24,7 @@ private:
     std::vector<sf::Text> labels;
     
     bool is_paused;
-    bool is_audio_enabled = false;
+    bool is_audio_enabled = true;
     
     std::vector<sf::Text> statistics_labels;
     std::vector<sf::Text> statistics;

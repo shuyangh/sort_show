@@ -383,13 +383,17 @@ void QuickSortDemonstrator::updateIndicators(AlgorithmsDemonstrator& demonstrato
 }
 
 void QuickSortDemonstrator::updateStatistics(const std::vector<int>& data_ref) {
-    int correct_positions = 0;
-    for (size_t element_index = 0; element_index < data_ref.size(); ++element_index) {
-        if (data_ref[element_index] == static_cast<int>(element_index + 1)) {
-            correct_positions++;
+    int inversions = 0;
+    for (size_t first_index = 0; first_index < data_ref.size(); ++first_index) {
+        for (size_t second_index = first_index + 1; second_index < data_ref.size(); ++second_index) {
+            if (data_ref[first_index] > data_ref[second_index]) {
+                inversions++;
+            }
         }
     }
-    statistics.sortedness = (static_cast<float>(correct_positions) / data_ref.size()) * 100.0f;
+    
+    int maximum_inversions_count = static_cast<int>(data_ref.size() * (data_ref.size() - 1) / 2);
+    statistics.sortedness = maximum_inversions_count > 0 ? (1.0f - static_cast<float>(inversions) / maximum_inversions_count) * 100.0f : 100.0f;
 }
 
 std::wstring QuickSortDemonstrator::getCurrentStepExplaination() const {
