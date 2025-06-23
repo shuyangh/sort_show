@@ -7,6 +7,9 @@ int main()
 {
     auto window = sf::RenderWindow(sf::VideoMode({1280u, 960u}), L"排序算法演示器");
     window.setFramerateLimit(60);
+    
+    const unsigned int MIN_WINDOW_WIDTH = 800u;
+    const unsigned int MIN_WINDOW_HEIGHT = 600u;
 
     ControlPanel control_panel;
     AlgorithmsDemonstrator algorithms_demonstrator;
@@ -41,11 +44,13 @@ int main()
 
     updateLayout();
     
-    sf::Vector2u window_size = window.getSize();
-    float window_width = static_cast<float>(window_size.x);
-    float control_width = 350.0f;
-    float display_width = window_width - control_width;
-    sf::FloatRect panel_shape = sf::FloatRect(sf::Vector2f(display_width, 0.f), sf::Vector2f(control_width, static_cast<float>(window_size.y)));
+    sf::Vector2u initial_window_size = window.getSize();
+    float initial_window_width = static_cast<float>(initial_window_size.x);
+    float initial_window_height = static_cast<float>(initial_window_size.y);
+    float initial_control_width = std::max(300.0f, std::min(350.0f, initial_window_width * 0.3f));
+    float initial_display_width = initial_window_width - initial_control_width;
+    
+    sf::FloatRect panel_shape = sf::FloatRect(sf::Vector2f(initial_display_width, 0.f), sf::Vector2f(initial_control_width, initial_window_height));
     control_panel.setupControls(panel_shape);
 
     control_panel.on_start_sort_clicked = [&]() {
@@ -103,8 +108,15 @@ int main()
             } else if (event->is<sf::Event::Resized>()) {
                 const auto* resize_event = event->getIf<sf::Event::Resized>();
                 if (resize_event) {
+                    unsigned int new_width = std::max(MIN_WINDOW_WIDTH, resize_event->size.x);
+                    unsigned int new_height = std::max(MIN_WINDOW_HEIGHT, resize_event->size.y);
+                    
+                    if (new_width != resize_event->size.x || new_height != resize_event->size.y) {
+                        window.setSize(sf::Vector2u(new_width, new_height));
+                    }
+                    
                     sf::FloatRect visible_area(sf::Vector2f(0.0f, 0.0f), 
-                    sf::Vector2f(static_cast<float>(resize_event->size.x), static_cast<float>(resize_event->size.y)));
+                    sf::Vector2f(static_cast<float>(new_width), static_cast<float>(new_height)));
                     window.setView(sf::View(visible_area));
                     updateLayout();
                 }
@@ -115,7 +127,14 @@ int main()
 
         control_panel.update(mouse_position);
         
-        sf::FloatRect demonstrator_area = sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(display_width, static_cast<float>(window_size.y)));
+        sf::Vector2u current_window_size = window.getSize();
+        float current_window_width = static_cast<float>(current_window_size.x);
+        float current_window_height = static_cast<float>(current_window_size.y);
+        
+        float current_control_width = std::max(300.0f, std::min(350.0f, current_window_width * 0.3f));
+        float current_display_width = current_window_width - current_control_width;
+        
+        sf::FloatRect demonstrator_area = sf::FloatRect(sf::Vector2f(0.f, 0.f), sf::Vector2f(current_display_width, current_window_height));
         algorithms_demonstrator.update(demonstrator_area, duration_since_animation_start);
         
         const auto& statistics_ref = algorithms_demonstrator.getStatistics();

@@ -49,9 +49,7 @@ private:
     bool is_initialized = false;
     bool has_merge_finished = false;
     std::wstring current_step_description = L"准备开始排序";
-    
     sf::Clock animation_clock;
-    float time_per_step = 1.0f;
     float merge_animation_duration = 0.8f;
     float swap_animation_duration = 0.4f;
     

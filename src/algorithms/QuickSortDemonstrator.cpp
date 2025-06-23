@@ -55,12 +55,16 @@ bool QuickSortDemonstrator::step(std::vector<int>& data_ref, AlgorithmsDemonstra
         updateSwapAnimation(data_ref, demonstrator_ref, scaled_duration_since_animation_start);
         return false;
     }
-      if (!is_initialized) {
+    
+    if (!is_initialized) {
         initializeQuickSort(data_ref);
         return false;
     }
     
-    if (animation_clock.getElapsedTime().asSeconds() >= time_per_step) {
+    float current_animation_speed = demonstrator_ref.getAnimationSpeed();
+    float dynamic_time_per_step = 1.0f / current_animation_speed;
+    
+    if (animation_clock.getElapsedTime().asSeconds() >= dynamic_time_per_step) {
         performQuickSortStep(data_ref, demonstrator_ref);
         animation_clock.restart();
     }

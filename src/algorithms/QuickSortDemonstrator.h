@@ -31,9 +31,7 @@ private:
     int right_partition_boundary = -1;
     int pivot_final_sorted_position = -1;
     std::wstring current_step_description = L"准备开始排序";
-    
     sf::Clock animation_clock;
-    float time_per_step = 1.0f;
     float swap_animation_duration = 0.4f;
     
     static const sf::Color NORMAL_COLOR;

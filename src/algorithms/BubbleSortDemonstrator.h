@@ -18,9 +18,7 @@ private:
     int largest_element_index = -1;
     bool is_indicator_update_needed = false;
     std::wstring current_step_description = L"准备开始排序";
-    
     sf::Clock animation_clock;
-    float time_per_step = 1.0f;
     float swap_animation_duration = 0.4f;
     
     static const sf::Color NORMAL_COLOR;

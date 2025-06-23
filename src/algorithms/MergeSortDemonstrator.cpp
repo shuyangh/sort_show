@@ -47,13 +47,16 @@ bool MergeSortDemonstrator::step(std::vector<int>& data_ref, AlgorithmsDemonstra
         updatePause(scaled_duration_since_animation_start);
         return false;
     }
-
+    
     if (animation_state.is_animating) {
         updateSwapAnimation(data_ref, demonstrator_ref, scaled_duration_since_animation_start);
         return false;
     }
     
-    if (animation_clock.getElapsedTime().asSeconds() >= time_per_step) {
+    float current_animation_speed = demonstrator_ref.getAnimationSpeed();
+    float dynamic_time_per_step = 1.0f / current_animation_speed;
+    
+    if (animation_clock.getElapsedTime().asSeconds() >= dynamic_time_per_step) {
         performMergeSortStep(data_ref, demonstrator_ref);
         animation_clock.restart();
     } else if (current_step_description == L"准备开始排序") {
@@ -854,7 +857,7 @@ void MergeSortDemonstrator::addSpecialPairSwapIndicator(float bar_width, const s
         animation_state.indicators.emplace_back(
             IndicatorType::Rectangle,
             final_rectangle_position,
-            MERGING_LEFT_COLOR
+            MERGING_RIGHT_COLOR
         );
         animation_state.indicators.back().size = final_rectangle_size;
     }

@@ -33,7 +33,7 @@ AlgorithmsDemonstrator::AlgorithmsDemonstrator() : data_size(50), distribution_m
         midi_player_ptr->setNoteRange(48, 48);
     }
     
-    explaination = sf::Text(font);
+    explaination_ptr = sf::Text(font);
     generateData();
     
     setAlgorithm(L"冒泡排序");
@@ -55,7 +55,9 @@ void AlgorithmsDemonstrator::setAlgorithm(const std::wstring& algorithm_name) {
 }
 
 void AlgorithmsDemonstrator::setAnimationSpeed(float speed) {
-    animation_speed = std::max(0.1f, std::min(10.0f, speed));
+    float clamped_speed = std::max(0.1f, std::min(10.0f, speed));
+    
+    animation_speed = std::exp(clamped_speed / 0.5f);
 }
 
 void AlgorithmsDemonstrator::setMargins(float top, float bottom, float left, float right) {
@@ -194,8 +196,8 @@ void AlgorithmsDemonstrator::render(sf::RenderWindow& window_ref) {
         renderIndicators(window_ref, animation_state_ref);
     }
     
-    if (explaination.has_value()) {
-        window_ref.draw(*explaination);
+    if (explaination_ptr.has_value()) {
+        window_ref.draw(*explaination_ptr);
     }
 }
 
@@ -235,18 +237,32 @@ void AlgorithmsDemonstrator::updateBars(const sf::FloatRect& area_ref) {
         adjusted_bottom_margin = margin_bottom * margin_multiplier;
     }
     
-    content_area.position.x = area_ref.position.x + margin_left;
-    content_area.position.y = area_ref.position.y + margin_top;
-    content_area.size.x = area_ref.size.x - margin_left - margin_right;
-    content_area.size.y = area_ref.size.y - margin_top - adjusted_bottom_margin;
+    float area_scale_factor = std::min(area_ref.size.x / 800.0f, area_ref.size.y / 600.0f);
+    area_scale_factor = std::max(0.5f, std::min(2.0f, area_scale_factor));
     
-    if (content_area.size.x <= 0 || content_area.size.y <= 0) return;
+    float scaled_margin_left = margin_left * area_scale_factor;
+    float scaled_margin_right = margin_right * area_scale_factor;
+    float scaled_margin_top = margin_top * area_scale_factor;
+    float scaled_adjusted_bottom_margin = adjusted_bottom_margin * area_scale_factor;
+    
+    content_area.position.x = area_ref.position.x + scaled_margin_left;
+    content_area.position.y = area_ref.position.y + scaled_margin_top;
+    content_area.size.x = area_ref.size.x - scaled_margin_left - scaled_margin_right;
+    content_area.size.y = area_ref.size.y - scaled_margin_top - scaled_adjusted_bottom_margin;
+    
+    if (content_area.size.x <= 50.0f || content_area.size.y <= 50.0f) return;
     
     float bar_width = content_area.size.x / data.size();
     float max_height = content_area.size.y;
     
+    if (bar_width < 1.0f) {
+        bar_width = 1.0f;
+    }
+    
     for (size_t bar_index = 0; bar_index < bars.size() && bar_index < data.size(); ++bar_index) {
         float height = (static_cast<float>(data[bar_index]) / data_size) * max_height;
+        
+        height = std::max(1.0f, height);
         
         bars[bar_index].setSize(sf::Vector2f(bar_width - 1.0f, height));
         
@@ -260,16 +276,26 @@ void AlgorithmsDemonstrator::updateBars(const sf::FloatRect& area_ref) {
 }
 
 void AlgorithmsDemonstrator::updateExplaination() {
-    if (!explaination.has_value() || !current_algorithm_ptr) return;
+    if (!explaination_ptr.has_value() || !current_algorithm_ptr) return;
     
     std::wstring current_step_explaination = current_algorithm_ptr->getCurrentStepExplaination();
     
-    explaination->setString(current_step_explaination);
-    explaination->setCharacterSize(18);
-    explaination->setFillColor(sf::Color::Black);
-    explaination->setOutlineColor(sf::Color::White);
-    explaination->setOutlineThickness(0.5f);
-    explaination->setPosition(sf::Vector2f(display_area.position.x + 10, display_area.position.y + 10));
+    explaination_ptr->setString(current_step_explaination);
+    
+    float base_character_size = 18.0f;
+    float area_scale_factor = std::min(display_area.size.x / 800.0f, display_area.size.y / 600.0f);
+    area_scale_factor = std::max(0.7f, std::min(1.5f, area_scale_factor));
+    
+    unsigned int scaled_character_size = static_cast<unsigned int>(base_character_size * area_scale_factor);
+    scaled_character_size = std::max(12u, std::min(24u, scaled_character_size));
+    
+    explaination_ptr->setCharacterSize(scaled_character_size);
+    explaination_ptr->setFillColor(sf::Color::Black);
+    explaination_ptr->setOutlineColor(sf::Color::White);
+    explaination_ptr->setOutlineThickness(0.5f * area_scale_factor);
+    
+    float position_offset = 10.0f * area_scale_factor;
+    explaination_ptr->setPosition(sf::Vector2f(display_area.position.x + position_offset, display_area.position.y + position_offset));
 }
 
 sf::Vector2f AlgorithmsDemonstrator::calculateAnimatedElementPosition(const sf::Vector2f& start_position_ref, const sf::Vector2f& end_position_ref, float animation_progress) {
@@ -342,10 +368,17 @@ void AlgorithmsDemonstrator::renderIndicators(sf::RenderWindow& window_ref, cons
 
 void AlgorithmsDemonstrator::renderTriangleIndicator(sf::RenderWindow& window_ref, const VisualIndicator& indicator_ref) {
     int data_size = static_cast<int>(data.size());
-    float triangle_size = 8.0f;
+    float base_triangle_size = 8.0f;
+    
     if (data_size < 32 && data_size > 0) {
-        triangle_size = 8.0f + 24.0f * (32 - data_size) / 31.0f;
+        base_triangle_size = 8.0f + 24.0f * (32 - data_size) / 31.0f;
     }
+    
+    float area_scale_factor = std::min(content_area.size.x / 800.0f, content_area.size.y / 600.0f);
+    area_scale_factor = std::max(0.5f, std::min(2.0f, area_scale_factor));
+    
+    float triangle_size = base_triangle_size * area_scale_factor;
+    
     sf::CircleShape triangle(triangle_size, 3);
     triangle.setFillColor(indicator_ref.color);
     triangle.setPosition(sf::Vector2f(indicator_ref.position.x - triangle_size, indicator_ref.position.y));
@@ -355,21 +388,33 @@ void AlgorithmsDemonstrator::renderTriangleIndicator(sf::RenderWindow& window_re
 void AlgorithmsDemonstrator::renderRectangleIndicator(sf::RenderWindow& window_ref, const VisualIndicator& indicator_ref) {
     sf::RectangleShape rectangle(indicator_ref.size);
     rectangle.setFillColor(sf::Color(indicator_ref.color.r, indicator_ref.color.g, indicator_ref.color.b, 50));
-    rectangle.setOutlineThickness(2.0f);
+    
+    float area_scale_factor = std::min(content_area.size.x / 800.0f, content_area.size.y / 600.0f);
+    area_scale_factor = std::max(0.5f, std::min(2.0f, area_scale_factor));
+    float outline_thickness = 2.0f * area_scale_factor;
+    
+    rectangle.setOutlineThickness(outline_thickness);
     rectangle.setOutlineColor(indicator_ref.color);
     rectangle.setPosition(indicator_ref.position);
     window_ref.draw(rectangle);
 }
 
 void AlgorithmsDemonstrator::renderArrowIndicator(sf::RenderWindow& window_ref, const VisualIndicator& indicator_ref) {
-    sf::RectangleShape arrow_pole(sf::Vector2f(3, 20));
+    float area_scale_factor = std::min(content_area.size.x / 800.0f, content_area.size.y / 600.0f);
+    area_scale_factor = std::max(0.5f, std::min(2.0f, area_scale_factor));
+    
+    float pole_width = 3.0f * area_scale_factor;
+    float pole_height = 20.0f * area_scale_factor;
+    float head_size = 8.0f * area_scale_factor;
+    
+    sf::RectangleShape arrow_pole(sf::Vector2f(pole_width, pole_height));
     arrow_pole.setFillColor(indicator_ref.color);
-    arrow_pole.setPosition(sf::Vector2f(indicator_ref.position.x - 1.5f, indicator_ref.position.y - 25));
+    arrow_pole.setPosition(sf::Vector2f(indicator_ref.position.x - pole_width/2.0f, indicator_ref.position.y - 25.0f * area_scale_factor));
     window_ref.draw(arrow_pole);
     
-    sf::CircleShape arrow_head(8, 3);
+    sf::CircleShape arrow_head(head_size, 3);
     arrow_head.setFillColor(indicator_ref.color);
-    arrow_head.setPosition(sf::Vector2f(indicator_ref.position.x - 8, indicator_ref.position.y - 8));
+    arrow_head.setPosition(sf::Vector2f(indicator_ref.position.x - head_size, indicator_ref.position.y - head_size));
     arrow_head.rotate(sf::degrees(180));
     window_ref.draw(arrow_head);
 }
@@ -377,7 +422,6 @@ void AlgorithmsDemonstrator::renderArrowIndicator(sf::RenderWindow& window_ref, 
 void AlgorithmsDemonstrator::renderRangeIndicator(sf::RenderWindow& window_ref, const VisualIndicator& indicator_ref) {
     float width = indicator_ref.size.x;
     
-    // Scale with data size like triangle indicator
     int data_size = static_cast<int>(data.size());
     float line_thickness = 3.0f;
     float boundary_height = 15.0f;

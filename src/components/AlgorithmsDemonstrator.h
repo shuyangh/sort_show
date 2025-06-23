@@ -28,7 +28,7 @@ private:
     sf::Clock animation_clock;
     
     sf::Font font;
-    std::optional<sf::Text> explaination;
+    std::optional<sf::Text> explaination_ptr;
 
     sf::FloatRect display_area;
     sf::FloatRect content_area;
